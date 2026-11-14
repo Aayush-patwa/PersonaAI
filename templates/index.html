@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS — Personal AI Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* ── RESET & BASE ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #05050f;
+            --bg-secondary: #0d0d1f;
+            --bg-card: #111128;
+            --accent: #00d4ff;
+            --accent-dim: rgba(0, 212, 255, 0.15);
+            --accent-glow: rgba(0, 212, 255, 0.4);
+            --green: #00ff88;
+            --red: #ff4444;
+            --orange: #ff9900;
+            --text-primary: #e0e0ff;
+            --text-secondary: #7070a0;
+            --border: rgba(0, 212, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+        /* ── TOP NAV ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .jarvis-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 16px;
+            box-shadow: 0 0 12px var(--accent-glow);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 12px var(--accent-glow); }
+            50% { box-shadow: 0 0 24px var(--accent-glow), 0 0 40px var(--accent-glow); }
+        }
+
+        .jarvis-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .jarvis-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--green);
+        }
+
+        .status-dot::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .topbar-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            letter-spacing: 0.5px;
+        }
+
+        .tab:hover { color: var(--accent); }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ── PANELS ── */
+        .panel {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel.active { display: flex; }
+
+        /* ════════════════════════════════
+           CHAT PANEL
+        ════════════════════════════════ */
+        #panel-chat {
+            flex-direction: column;
+        }
+
+        .chat-doc-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15%;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .doc-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .doc-select option { background: var(--bg-card); }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 15%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg {
+            display: flex;
+            gap: 12px;
+            max-width: 65%;
+            animation: fadeUp 0.3s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg.user { margin-left: auto; flex-direction: row-reverse; }
+
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .msg.bot .msg-avatar {
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .msg.user .msg-avatar {
+            background: rgba(100, 100, 255, 0.15);
+            border: 1px solid rgba(100, 100, 255, 0.4);
+            color: #aaaaff;
+        }
+
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .msg.bot .msg-bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top-left-radius: 3px;
+            color: var(--text-primary);
+        }
+
+        .msg.user .msg-bubble {
+            background: rgba(0, 212, 255, 0.12);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-top-right-radius: 3px;
+            color: var(--text-primary);
+        }
+
+        .msg-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .typing-indicator {
+            display: none;
+            gap: 10px;
+            max-width: 75%;
+        }
+
+        .typing-indicator.visible { display: flex; }
+
+        .typing-dots {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            border-top-left-radius: 3px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .typing-dots span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: typing 1.2s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .chat-input-area {
+            padding: 16px 15%;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            resize: none;
+            max-height: 100px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus { border-color: var(--accent); }
+        .chat-input::placeholder { color: var(--text-secondary); }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: var(--accent);
+            border: none;
+            color: #000;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { background: #00bbee; box-shadow: 0 0 12px var(--accent-glow); }
+        .send-btn:disabled { background: var(--text-secondary); cursor: not-allowed; }
+
+        /* ════════════════════════════════
+           TASKS PANEL
+        ════════════════════════════════ */
+        #panel-tasks {
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tasks-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .tasks-sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-box .stat-num {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-box .stat-num.red { color: var(--red); }
+        .stat-box .stat-num.orange { color: var(--orange); }
+        .stat-box .stat-num.green { color: var(--green); }
+
+        .stat-box .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .add-task-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-title {
+            font-size: 13px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus { border-color: var(--accent); }
+        .form-input::placeholder { color: var(--text-secondary); }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            border-radius: 7px;
+            padding: 9px;
+            color: #000;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover {
+            background: #00bbee;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .tasks-main {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .tasks-header h2 {
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .filter-tab {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active, .filter-tab:hover {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .task-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-dim);
+        }
+
+        .task-card.completed {
+            opacity: 0.5;
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .task-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .task-check:hover { border-color: var(--green); }
+        .task-check.done { background: var(--green); border-color: var(--green); }
+        .task-check.done::after { content: '✓'; color: #000; font-size: 11px; font-weight: 700; }
+
+        .task-body { flex: 1; }
+
+        .task-title-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .task-card.completed .task-title-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .due-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .due-badge.overdue {
+            background: rgba(255, 68, 68, 0.15);
+            color: var(--red);
+            border-color: rgba(255, 68, 68, 0.3);
+        }
+
+        .due-badge.soon {
+            background: rgba(255, 153, 0, 0.15);
+            color: var(--orange);
+            border-color: rgba(255, 153, 0, 0.3);
+        }
+
+        .task-actions-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover { border-color: var(--red); color: var(--red); }
+        .icon-btn.complete:hover { border-color: var(--green); color: var(--green); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i { font-size: 36px; margin-bottom: 10px; color: var(--border); }
+
+        /* ════════════════════════════════
+           DOCUMENTS PANEL
+        ════════════════════════════════ */
+        #panel-docs {
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+            gap: 20px;
+        }
+
+        .docs-upload-area {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 14px;
+            padding: 36px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .docs-upload-area:hover, .docs-upload-area.dragover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .docs-upload-area i {
+            font-size: 36px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .docs-upload-area p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .docs-upload-area span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .doc-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .doc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-dim);
+        }
+
+        .doc-icon {
+            font-size: 28px;
+            color: var(--accent);
+        }
+
+        .doc-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .doc-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .doc-summary {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
+
+        /* ════════════════════════════════
+           SETTINGS PANEL
+        ════════════════════════════════ */
+        #panel-settings {
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+            gap: 20px;
+        }
+
+        .settings-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .settings-title {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-row:last-child { border-bottom: none; }
+
+        .setting-label {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .setting-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .btn-outline {
+            padding: 7px 16px;
+            border-radius: 7px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover { background: var(--accent-dim); }
+        .btn-outline.danger { border-color: var(--red); color: var(--red); }
+        .btn-outline.danger:hover { background: rgba(255,68,68,0.1); }
+
+        /* ── TOAST NOTIFICATION ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            color: var(--text-primary);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .toast.error { border-color: var(--red); }
+        .toast.success { border-color: var(--green); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ── HIDDEN FILE INPUT ── */
+        #fileInput { display: none; }
+
+    </style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="jarvis-logo"><i class="fas fa-robot"></i></div>
+        <div>
+            <div class="jarvis-title">J.A.R.V.I.S</div>
+            <div class="jarvis-subtitle">Personal AI Assistant</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="status-dot" id="statusDot">Online</div>
+        <div class="topbar-time" id="topbarTime">--:--</div>
+    </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('chat')">
+        <i class="fas fa-comment-dots"></i> Chat
+    </div>
+    <div class="tab" onclick="switchTab('tasks')">
+        <i class="fas fa-tasks"></i> Tasks
+    </div>
+    <div class="tab" onclick="switchTab('docs')">
+        <i class="fas fa-file-alt"></i> Documents
+    </div>
+    <div class="tab" onclick="switchTab('settings')">
+        <i class="fas fa-cog"></i> Settings
+    </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+    <!-- ════ CHAT PANEL ════ -->
+    <div class="panel active" id="panel-chat">
+        <div class="chat-doc-bar">
+            <i class="fas fa-file-circle-check" style="color: var(--accent)"></i>
+            Ask about a document:
+            <select class="doc-select" id="docSelect">
+                <option value="">— No document selected —</option>
+            </select>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg bot">
+                <div class="msg-avatar"><i class="fas fa-robot"></i></div>
+                <div>
+                    <div class="msg-bubble">
+                        Good day. I'm <strong style="color:var(--accent)">JARVIS</strong> — your personal AI assistant.<br><br>
+                        I can help you with <strong>tasks</strong>, answer <strong>any question</strong>, search the <strong>web in real time</strong>, and read your <strong>documents</strong>.<br><br>
+                        What shall we do today?
+                    </div>
+                    <div class="msg-time" id="initTime"></div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="msg-avatar msg-avatar-bot"
+                     style="width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="typing-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <textarea class="chat-input" id="chatInput"
+                      placeholder="Talk to JARVIS... (Enter to send)"
+                      rows="1"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ════ TASKS PANEL ════ -->
+    <div class="panel" id="panel-tasks">
+        <div class="tasks-layout">
+
+            <div class="tasks-sidebar">
+                <div class="sidebar-title">Overview</div>
+
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-num" id="statTotal">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num green" id="statDone">0</div>
+                        <div class="stat-label">Done</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num orange" id="statPending">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num red" id="statOverdue">0</div>
+                        <div class="stat-label">Overdue</div>
+                    </div>
+                </div>
+
+                <div class="add-task-form">
+                    <div class="form-title"><i class="fas fa-plus"></i> Add New Task</div>
+                    <input type="text" class="form-input" id="taskTitle" placeholder="Task title...">
+                    <textarea class="form-input" id="taskDesc" placeholder="Description (optional)" rows="2"></textarea>
+                    <input type="date" class="form-input" id="taskDue">
+                    <button class="btn-primary" onclick="addTask()">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+            </div>
+
+            <div class="tasks-main">
+                <div class="tasks-header">
+                    <h2>Your Tasks</h2>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="filterTasks('all', this)">All</button>
+                        <button class="filter-tab" onclick="filterTasks('pending', this)">Pending</button>
+                        <button class="filter-tab" onclick="filterTasks('completed', this)">Completed</button>
+                    </div>
+                </div>
+                <div id="tasksList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════ DOCUMENTS PANEL ════ -->
+    <div class="panel" id="panel-docs">
+        <div class="docs-upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Drop files here or <span>click to upload</span></p>
+            <p style="font-size:12px; margin-top:6px;">PDF, DOCX and TXT files supported</p>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,.txt,.docx" onchange="uploadDocument(this)">
+        <div class="docs-grid" id="docsGrid"></div>
+    </div>
+
+    <!-- ════ SETTINGS PANEL ════ -->
+    <div class="panel" id="panel-settings">
+
+        <div class="settings-section">
+            <div class="settings-title"><i class="fas fa-bell"></i> Reminders</div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Test Gmail Reminder</div>
+                    <div class="setting-desc">Send a test email to verify your Gmail setup</div>
+                </div>
+                <button class="btn-outline" onclick="testEmail()">Send Test</button>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Check Due Tasks Now</div>
+                    <div class="setting-desc">Manually trigger reminder check</div>
+                </div>
+                <button class="btn-outline" onclick="checkReminders()">Check Now</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-title"><i class="fas fa-brain"></i> Memory</div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Clear Chat Memory</div>
+                    <div class="setting-desc">JARVIS will forget previous conversations</div>
+                </div>
+                <button class="btn-outline danger" onclick="clearMemory()">Clear</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-title"><i class="fas fa-info-circle"></i> System</div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">AI Model</div>
+                    <div class="setting-desc">Llama 3.3 70B via Groq (Free)</div>
+                </div>
+                <span style="color:var(--green); font-size:12px;">● Active</span>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Web Search</div>
+                    <div class="setting-desc">DuckDuckGo real-time search</div>
+                </div>
+                <span style="color:var(--green); font-size:12px;">● Active</span>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Version</div>
+                </div>
+                <span style="color:var(--text-secondary); font-size:12px;">JARVIS v1.0</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════
+
+function now() {
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function toast(msg, type='success') {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icon = type === 'error' ? 'fa-circle-xmark' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-check';
+    t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+// Clock
+function updateClock() {
+    document.getElementById('topbarTime').textContent = now();
+}
+setInterval(updateClock, 1000);
+updateClock();
+document.getElementById('initTime').textContent = now();
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+
+    if (tab === 'tasks') loadTasks();
+    if (tab === 'docs') loadDocuments();
+}
+
+// ══════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════
+
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const typingIndicator = document.getElementById('typingIndicator');
+
+chatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+chatInput.addEventListener('input', () => {
+    chatInput.style.height = 'auto';
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
+});
+
+function addMessage(content, isUser=false) {
+    const div = document.createElement('div');
+    div.className = `msg ${isUser ? 'user' : 'bot'}`;
+
+    const formattedContent = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+    div.innerHTML = `
+        <div class="msg-avatar">
+            <i class="fas ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+        </div>
+        <div>
+            <div class="msg-bubble">${formattedContent}</div>
+            <div class="msg-time">${now()}</div>
+        </div>
+    `;
+
+    chatMessages.insertBefore(div, typingIndicator);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    const docId = document.getElementById('docSelect').value;
+
+    addMessage(message, true);
+    chatInput.value = '';
+    chatInput.style.height = 'auto';
+    sendBtn.disabled = true;
+    typingIndicator.classList.add('visible');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message, doc_id: docId || null})
+        });
+        const data = await res.json();
+        typingIndicator.classList.remove('visible');
+
+        if (data.success) {
+            addMessage(data.response);
+            // Refresh tasks if task-related
+            // Refresh tasks after every message
+                // Refresh tasks immediately and after AI processes
+        loadTasks();
+        setTimeout(() => loadTasks(), 1000);
+        setTimeout(() => loadTasks(), 3000);
+        } else {
+            addMessage('Sorry, something went wrong. Please try again.');
+        }
+    } catch(e) {
+        typingIndicator.classList.remove('visible');
+        addMessage('Connection error. Is the server running?');
+    } finally {
+        sendBtn.disabled = false;
+        chatInput.focus();
+    }
+}
+
+// ══════════════════════════════════════
+// TASKS
+// ══════════════════════════════════════
+
+let allTasks = [];
+let currentFilter = 'all';
+
+async function loadTasks() {
+    try {
+        const res = await fetch('/api/tasks?t=' + Date.now()); // prevent caching
+        const data = await res.json();
+        if (data.success) {
+            allTasks = data.tasks;
+            console.log('Tasks loaded:', allTasks.length, allTasks);
+            renderTasks();
+            updateStats();
+        }
+    } catch(e) {
+        console.error('Error loading tasks:', e);
+    }
+}
+
+function updateStats() {
+    const total = allTasks.length;
+    const done = allTasks.filter(t => t.completed).length;
+    const pending = total - done;
+
+    const today = new Date().toISOString().split('T')[0];
+    const overdue = allTasks.filter(t => !t.completed && t.due_date && t.due_date < today).length;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statDone').textContent = done;
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statOverdue').textContent = overdue;
+}
+
+function getDueBadge(due_date, completed) {
+    if (!due_date || completed) return '';
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+    if (due_date < today) return `<span class="due-badge overdue">⚠ Overdue</span>`;
+    if (due_date === today) return `<span class="due-badge soon">🔥 Due Today</span>`;
+    if (due_date === tomorrow) return `<span class="due-badge soon">📅 Tomorrow</span>`;
+    return `<span class="due-badge">📅 ${due_date}</span>`;
+}
+
+function renderTasks() {
+    const list = document.getElementById('tasksList');
+    let filtered = [...allTasks];
+
+    if (currentFilter === 'pending') {
+        filtered = allTasks.filter(t => !t.completed && t.completed !== 1);
+    }
+    if (currentFilter === 'completed') {
+        filtered = allTasks.filter(t => t.completed || t.completed === 1);
+    }
+
+    console.log('Rendering tasks — filter:', currentFilter, 'count:', filtered.length);
+
+    if (filtered.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-clipboard-check"></i>
+                <p>No tasks here!</p>
+            </div>`;
+        return;
+    }
+
+    list.innerHTML = filtered.map(task => {
+        const isCompleted = task.completed === 1 || task.completed === true;
+        return `
+        <div class="task-card ${isCompleted ? 'completed' : ''}" id="task-${task.id}">
+            <div class="task-check ${isCompleted ? 'done' : ''}"
+                 onclick="${isCompleted ? '' : `completeTask(${task.id})`}"></div>
+            <div class="task-body">
+                <div class="task-title-text">${task.title}</div>
+                <div class="task-meta">
+                    ${getDueBadge(task.due_date, isCompleted)}
+                    ${isCompleted ? '<span style="font-size:11px;color:var(--green)">✓ Completed</span>' : ''}
+                </div>
+            </div>
+            <div class="task-actions-btns">
+                ${!isCompleted ? `
+                <button class="icon-btn complete" onclick="completeTask(${task.id})" title="Complete">
+                    <i class="fas fa-check"></i>
+                </button>` : ''}
+                <button class="icon-btn" onclick="deleteTask(${task.id})" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function filterTasks(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderTasks();
+}
+
+async function addTask() {
+    const title = document.getElementById('taskTitle').value.trim();
+    const desc = document.getElementById('taskDesc').value.trim();
+    const due = document.getElementById('taskDue').value;
+
+    if (!title) { toast('Please enter a task title', 'error'); return; }
+
+    try {
+        const res = await fetch('/api/tasks/add', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({title, description: desc, due_date: due || null})
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            toast('Task added!');
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDesc').value = '';
+            document.getElementById('taskDue').value = '';
+            loadTasks();
+        } else {
+            toast(data.message, 'error');
+        }
+    } catch(e) {
+        toast('Error adding task', 'error');
+    }
+}
+
+async function completeTask(id) {
+    try {
+        const res = await fetch(`/api/tasks/${id}/complete`, {method:'POST'});
+        const data = await res.json();
+        if (data.success) {
+            toast('Task completed! ✓');
+            loadTasks();
+        }
+    } catch(e) {
+        toast('Error completing task', 'error');
+    }
+}
+
+async function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    try {
+        const res = await fetch(`/api/tasks/${id}/delete`, {method:'DELETE'});
+        const data = await res.json();
+        if (data.success) {
+            toast('Task deleted');
+            loadTasks();
+        }
+    } catch(e) {
+        toast('Error deleting task', 'error');
+    }
+}
+
+// ══════════════════════════════════════
+// DOCUMENTS
+// ══════════════════════════════════════
+
+async function loadDocuments() {
+    try {
+        const res = await fetch('/api/documents');
+        const data = await res.json();
+        if (data.success) {
+            renderDocuments(data.documents);
+            updateDocSelect(data.documents);
+        }
+    } catch(e) {
+        console.error('Error loading documents:', e);
+    }
+}
+
+function updateDocSelect(docs) {
+    const select = document.getElementById('docSelect');
+    select.innerHTML = '<option value="">— No document selected —</option>';
+    docs.forEach(doc => {
+        const opt = document.createElement('option');
+        opt.value = doc.id;
+        opt.textContent = doc.original_name;
+        select.appendChild(opt);
+    });
+}
+
+function renderDocuments(docs) {
+    const grid = document.getElementById('docsGrid');
+    if (docs.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1">
+                <i class="fas fa-file-circle-plus"></i>
+                <p>No documents uploaded yet</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = docs.map(doc => `
+        <div class="doc-card" id="doc-${doc.id}">
+            <div class="doc-icon">
+                <i class="fas ${doc.file_type === 'pdf' ? 'fa-file-pdf' : 'fa-file-alt'}"></i>
+            </div>
+            <div class="doc-name">${doc.original_name}</div>
+            <div class="doc-meta">
+                ${doc.file_type.toUpperCase()} •
+                ${(doc.file_size / 1024).toFixed(1)} KB •
+                ${new Date(doc.uploaded_at).toLocaleDateString()}
+            </div>
+            ${doc.summary ? `<div class="doc-summary">${doc.summary}</div>` : ''}
+            <div class="doc-actions">
+                <button class="btn-sm" onclick="askAboutDoc(${doc.id}, '${doc.original_name}')">
+                    <i class="fas fa-comment-dots"></i> Ask JARVIS
+                </button>
+                <button class="btn-sm danger" onclick="deleteDocument(${doc.id})">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function uploadDocument(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    toast('Uploading document...', 'success');
+
+    try {
+        const res = await fetch('/api/documents/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            toast(`${file.name} uploaded!`);
+            loadDocuments();
+        } else {
+            toast(data.message, 'error');
+        }
+    } catch(e) {
+        toast('Upload failed', 'error');
+    }
+
+    input.value = '';
+}
+
+function askAboutDoc(docId, docName) {
+    document.getElementById('docSelect').value = docId;
+    switchTab('chat');
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    chatInput.value = `Tell me about the document: ${docName}`;
+    chatInput.focus();
+}
+
+async function deleteDocument(id) {
+    if (!confirm('Delete this document?')) return;
+    try {
+        const res = await fetch(`/api/documents/${id}/delete`, {method:'DELETE'});
+        const data = await res.json();
+        if (data.success) {
+            toast('Document deleted');
+            loadDocuments();
+        }
+    } catch(e) {
+        toast('Error deleting document', 'error');
+    }
+}
+
+// Drag and drop
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        const input = document.getElementById('fileInput');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        uploadDocument(input);
+    }
+});
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+
+async function testEmail() {
+    toast('Sending test email...');
+    try {
+        const res = await fetch('/api/settings/test-email', {method:'POST'});
+        const data = await res.json();
+        toast(data.success ? 'Test email sent! Check your inbox.' : data.message, data.success ? 'success' : 'error');
+    } catch(e) {
+        toast('Error sending test email', 'error');
+    }
+}
+
+async function checkReminders() {
+    toast('Checking reminders...');
+    try {
+        const res = await fetch('/api/settings/check-reminders', {method:'POST'});
+        const data = await res.json();
+        toast(data.message);
+    } catch(e) {
+        toast('Error checking reminders', 'error');
+    }
+}
+
+async function clearMemory() {
+    if (!confirm('Clear all chat memory? JARVIS will forget previous conversations.')) return;
+    try {
+        const res = await fetch('/api/settings/clear-memory', {method:'POST'});
+        const data = await res.json();
+        toast(data.success ? 'Memory cleared!' : 'Error clearing memory', data.success ? 'success' : 'error');
+    } catch(e) {
+        toast('Error', 'error');
+    }
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+loadTasks();
+loadDocuments();
+</script>
+</body>
+</html>

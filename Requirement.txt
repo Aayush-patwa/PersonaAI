@@ -1,0 +1,10 @@
+flask
+groq
+ddgs
+pymupdf
+python-docx
+python-dotenv
+apscheduler
+sentence-transformers
+faiss-cpu
+numpy

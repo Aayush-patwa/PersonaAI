@@ -1,0 +1,182 @@
+[
+  {
+    "document": "DPA-WW.pdf",
+    "question": "how soon does adobe tell us before a new sub processor starts looking at our personal data?",
+    "reference": "At least fourteen (14) days in advance, which is the Objection Period.",
+    "evidence": "fourteen (14) days in advance"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "wait how many times can we audit adobe and how early do we gotta let them know?",
+    "reference": "No more than once a year, with 60 days' prior written notice unless otherwise agreed.",
+    "evidence": "60 days prior written notice"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "if we dont like a new subprocessor and we cant fix it with adobe whats our only option here?",
+    "reference": "It may terminate the affected Sales Order (only for the parts that can't be provided without the new sub-processor), and Adobe refunds prepaid unused fees.",
+    "evidence": "sole and exclusive remedy, may terminate the applicable Sales Order"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "who is actually the data controller and who is the processor under this thing?",
+    "reference": "The Customer is the Data Controller and Adobe is the Data Processor (a 'service provider' under the CCPA).",
+    "evidence": "Customer is the Data Controller and Adobe is the Data Processor"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "what happens to our personal info when the contract is over?",
+    "reference": "At the Customer's choice, Adobe deletes the Personal Data or returns it to the Customer.",
+    "evidence": "delete or return to the Customer all Personal Data"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "if the cops or some gov agency asks for our data what does adobe do first?",
+    "reference": "It tries to redirect the demand to the Customer; if it can't, it gives the Customer reasonable notice where legally permitted.",
+    "evidence": "Adobe will attempt to redirect the Third-Party Demand to Customer"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "which adobe company gets the data first when it comes out of europe?",
+    "reference": "Adobe Systems Software Ireland Limited (Adobe Ireland).",
+    "evidence": "Adobe Systems Software Ireland Limited as the initial data recipient"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "can adobe sell or share our data or are they blocked from doing that?",
+    "reference": "No. Adobe will not independently 'sell' or 'share' Personal Data as those terms are defined under the CCPA and other US laws.",
+    "evidence": "Adobe will not independently"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "can adobe charge extra if we ask for help with stuff thats outside what we bought?",
+    "reference": "Yes, Adobe may charge for costs beyond the agreed license fees where it isn't commercially reasonable to assist for free.",
+    "evidence": "Adobe may charge Customer for any costs beyond the agreed upon license fees"
+  },
+  {
+    "document": "DPA-WW.pdf",
+    "question": "what do they gotta do if there's a data breach?",
+    "reference": "Notify the Customer without undue delay, promptly contain, investigate and mitigate it, and cooperate with the Customer's investigation.",
+    "evidence": "notify Customer without undue delay per the notice provision"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "what embedding model does burnscope use and whats the vector dimension size?",
+    "reference": "all-mpnet-base-v2, which produces 768-dimensional vectors.",
+    "evidence": "maps sentences and short paragraphs to 768-dimensional dense vectors"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "how many passages are in the index and how are they divided by audience?",
+    "reference": "64 passages: 54 patient-safe and 10 clinician-only.",
+    "evidence": "64 passages, including 54 patient-safe and 10 clinician-only passages"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "what are the max and min chunk sizes and is the max a strict limit?",
+    "reference": "MAX_CHUNK_CHARS is 1200 and MIN_CHUNK_CHARS is 120; the maximum is a soft threshold, not a hard limit.",
+    "evidence": "MAX_CHUNK_CHARS as 1200 and MIN_CHUNK_CHARS as 120"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "did the report mention any issue with the distance metric?",
+    "reference": "The saved collection uses cosine distance but the documentation describes L2, which can lead to misinterpreting distance thresholds; the metric should be configured explicitly.",
+    "evidence": "The saved cosine configuration conflicts with L2 wording in the documentation"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "what filters does the retrieval tool use on candidate passages?",
+    "reference": "It considers top_k plus six candidates, uses a distance ceiling of 0.65 and a 0.20 margin from the best match, removes duplicates, applies medication redaction, and returns up to three passages.",
+    "evidence": "a distance ceiling of 0.65, and a margin of 0.20 from the best match"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "why'd they pick chromadb as the vector store instead of something else?",
+    "reference": "Its metadata filtering, which lets an eligible audience subset be searched through a where condition.",
+    "evidence": "metadata filtering is the explicit selection rationale stated in the project source"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "how does the parser figure out a passage is clinician only cause of dosage?",
+    "reference": "Buffered text and table passages are checked against dosage-related regex patterns, and matches are assigned to clinician_only; these are heuristics, not a full classifier.",
+    "evidence": "checked against dosage-related regex patterns; matching passages are assigned to clinician_only"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "why do they add the section title to the embedding input along with the text?",
+    "reference": "It gives topical context to passages whose own heading may be ambiguous, such as 'Management'.",
+    "evidence": "supplies topical context to a passage whose own heading may be ambiguous"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "does rebuilding the index just update it incrementally or what?",
+    "reference": "No. rebuild_index replaces the whole collection, so document changes require a deliberate rebuild.",
+    "evidence": "This is a complete replacement rather than an incremental update"
+  },
+  {
+    "document": "BurnScope_NLP_Project_Report.docx",
+    "question": "what metrics are recommended in the report to check retrieval quality?",
+    "reference": "Precision at k, Recall at k, and Mean Reciprocal Rank.",
+    "evidence": "Precision at k, Recall at k, and Mean Reciprocal Rank"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what does the l2 layer actually do, does it predict price directly?",
+    "reference": "No. L2 doesn't predict price; it validates whether the L1 prediction should be trusted and adjusts its confidence.",
+    "evidence": "Its purpose is NOT to directly predict price movement"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what is the model trying to predict and how's the label set up?",
+    "reference": "Whether gold moves UP or DOWN in the next 5 minutes: target is 1 if future price is above current price, 0 if below.",
+    "evidence": "Will gold move UP or DOWN in next 5 minutes"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what time windows do they use to aggregate the tick data?",
+    "reference": "1-minute, 5-minute and 15-minute windows.",
+    "evidence": "5-minute windows 15-minute windows"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what market sessions are used for the time features?",
+    "reference": "The Asian, London and New York sessions.",
+    "evidence": "Asian Session London Session New York Session"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what does order_book_imbalance actually mean/show?",
+    "reference": "It is a market pressure indicator.",
+    "evidence": "order_book_imbalance Market pressure indicator"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what metrics do they use to evaluate the backtest model?",
+    "reference": "Accuracy, MAE, RMSE, Precision, Recall and Confidence Reliability.",
+    "evidence": "Confidence Reliability"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what forecast horizons can the system handle?",
+    "reference": "Next 1 minute, 5 minutes, 15 minutes and 1 hour.",
+    "evidence": "Next 15 minutes Next 1 hour"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what tech stack do they suggest for the dashboard and deployment?",
+    "reference": "React / Next.js for the dashboard, and Docker / Cloud GPU for deployment.",
+    "evidence": "Dashboard React / Next.js"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "can you give an example of what an l1 output looks like?",
+    "reference": "Prediction UP, confidence 67%, expected move +0.4%.",
+    "evidence": "Expected Move: +0.4%"
+  },
+  {
+    "document": "Gold_Prediction_L2_Solution_Workflow.pdf",
+    "question": "what example does it show for the final prediction after l2 validation?",
+    "reference": "Gold may move UP with 74% confidence and a Medium risk level.",
+    "evidence": "Prediction: Gold may move UP"
+  }
+]

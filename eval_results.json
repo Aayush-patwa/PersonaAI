@@ -1,0 +1,229 @@
+{
+  "summary": {
+    "n_questions": 30,
+    "mode": "hybrid",
+    "chunk_size": 160,
+    "overlap": 40,
+    "top_k": 4,
+    "hit@4": 0.9333333333333333,
+    "mrr": 0.7388888888888888,
+    "retrieval_p50_ms": 41.23555001569912,
+    "retrieval_p95_ms": 218.84782502311282,
+    "correctness": 0.9333333333333333,
+    "faithfulness": 0.9,
+    "e2e_p50_ms": 4969.267899985425,
+    "e2e_p95_ms": 6866.786974971182
+  },
+  "questions": [
+    {
+      "question": "how soon does adobe tell us before a new sub processor starts looking at our personal data?",
+      "rank": 1,
+      "answer": "Adobe must notify subscribed email addresses at least fourteen (14) days before the new Sub\u2011processor is allowed to process Personal Data.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "wait how many times can we audit adobe and how early do we gotta let them know?",
+      "rank": 1,
+      "answer": "You may audit Adobe no more than **once per year**, and you must give Adobe **at least 60\u202fdays\u2019 written notice** before the audit (unless the parties agree otherwise in writing).",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "if we dont like a new subprocessor and we cant fix it with adobe whats our only option here?",
+      "rank": 2,
+      "answer": "Your only option is to terminate the applicable Sales Order (only for the parts that cannot be provided without the new sub\u2011processor). Adobe will then refund any prepaid, unused fees for that order.",
+      "correct": true,
+      "faithful": false
+    },
+    {
+      "question": "who is actually the data controller and who is the processor under this thing?",
+      "rank": 1,
+      "answer": "The agreement specifies that **the Customer is the Data\u202fController**, and **Adobe is the Data\u202fProcessor**.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what happens to our personal info when the contract is over?",
+      "rank": null,
+      "answer": "I don\u2019t know.",
+      "correct": false,
+      "faithful": false
+    },
+    {
+      "question": "if the cops or some gov agency asks for our data what does adobe do first?",
+      "rank": 1,
+      "answer": "Adobe will first try to redirect the request to the Customer. It will attempt to have the law\u2011enforcement or government demand sent straight to the Customer, and, if required by applicable data\u2011protection laws, will notify the Customer of the demand without undue delay.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "which adobe company gets the data first when it comes out of europe?",
+      "rank": 4,
+      "answer": "Adobe Systems\u202fSoftware\u202fIreland\u202fLimited (referred to as \u201cAdobe\u202fIreland\u201d) receives the data first when it is transferred out of Europe.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "can adobe sell or share our data or are they blocked from doing that?",
+      "rank": 1,
+      "answer": "Adobe is prohibited from independently \u201cselling\u201d or \u201csharing\u201d Personal Data (as those terms are defined under the CCPA and other U.S. data\u2011protection laws). The agreement expressly states that Adobe will not sell or share your data.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "can adobe charge extra if we ask for help with stuff thats outside what we bought?",
+      "rank": 1,
+      "answer": "Yes. If you ask Adobe to provide assistance that goes beyond the functionality you purchased, Adobe may charge you for any additional costs that are not covered by the agreed\u2011upon license fees. The charge is applied when the assistance is not considered \u201ccommercially reasonable\u201d for Adobe to provide without fee, taking into account factors such as the volume of requests, the complexity of the instructions, and the requested timescale.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what do they gotta do if there's a data breach?",
+      "rank": 1,
+      "answer": "If a Personal Data Breach occurs, Adobe must:\n\n1. **Notify the Customer promptly** \u2013 Adobe must inform the Customer \u201cwithout undue delay\u201d in accordance with the notice provisions of the Agreement.  \n2. **Contain, investigate, and mitigate** \u2013 Adobe must take reasonable steps to quickly contain the breach, investigate its cause, and mitigate any further impact.  \n3. **Cooperate with the Customer** \u2013 Adobe must give the Customer reasonable cooperation and support to help the Customer\u2019s own investigation.  \n4. **Provide detailed information** \u2013 Adobe must supply the Customer with timely details about the breach, including:\n   * What Adobe knows about the nature and consequences of the breach,  \n   * The measures Adobe has taken or plans to take to contain or mitigate it,  \n   * The status of Adobe\u2019s investigation,  \n   * A contact point for additional information, and  \n   * The categories and approximate number of data records affected.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what embedding model does burnscope use and whats the vector dimension size?",
+      "rank": 2,
+      "answer": "BurnScope uses the pretrained **\u201call\u2011mpnet\u2011base\u2011v2\u201d** sentence\u2011transformer model. That model produces **768\u2011dimensional** dense vector embeddings.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "how many passages are in the index and how are they divided by audience?",
+      "rank": null,
+      "answer": "The index contains **64 passages** in total.  \n- **Patient\u2011safe passages:** 54 (about\u202f84\u202f% of the index)  \n- **Clinician\u2011only passages:** 10 (the remaining\u202f16\u202f%).",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what are the max and min chunk sizes and is the max a strict limit?",
+      "rank": 1,
+      "answer": "The parser is configured with a **maximum chunk size of 1200 characters** and a **minimum chunk size of 120 characters**. The 1200\u2011character limit is **not a hard/strict limit**; it acts as a soft buffer threshold. When adding a paragraph would push a chunk over 1200 characters, the parser flushes the current buffer and starts a new chunk, but individual passages can still exceed 1200 characters (e.g., some observed passages were 1323\u202fcharacters and one synthetic paragraph was 3249\u202fcharacters).",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "did the report mention any issue with the distance metric?",
+      "rank": 3,
+      "answer": "Yes. The report notes that the saved index specifies cosine distance, but the documentation and code refer to L2 distance. This mismatch can cause incorrect interpretation of distance thresholds across environments, and the project should explicitly configure and validate the metric.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what filters does the retrieval tool use on candidate passages?",
+      "rank": 4,
+      "answer": "The retrieval tool applies several filters to the raw candidate passages before they are handed to the conversational agent:\n\n1. **Patient\u2011safety filter** \u2013 only passages that are deemed \u201cpatient\u2011safe\u201d are kept.  \n2. **Top\u2011k selection** \u2013 it first selects the top\u2011k nearest vectors and then adds six additional candidates for further checking.  \n3. **Topic check** \u2013 candidates are verified to match the requested topic.  \n4. **Distance ceiling** \u2013 any passage whose cosine distance exceeds **0.65** is discarded.  \n5. **Margin filter** \u2013 a candidate must be within **0.20** of the best\u2011match distance; anything farther away is dropped.  \n6. **Duplicate removal** \u2013 identical passages are eliminated.  \n7. **Medication\u2011related redaction** \u2013 passages containing medication information are redacted as required.  \n\nAfter these steps, up to **three** filtered passages (with their source metadata) are returned to the Groq conversational agent for response generation.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "why'd they pick chromadb as the vector store instead of something else?",
+      "rank": 1,
+      "answer": "I don't know.",
+      "correct": false,
+      "faithful": false
+    },
+    {
+      "question": "how does the parser figure out a passage is clinician only cause of dosage?",
+      "rank": 2,
+      "answer": "The parser looks for dosage expressions by running a set of dosage\u2011related regular\u2011expression patterns against each buffered text or table passage. If a passage matches one of those regexes, the parser tags that passage as **clinician_only**. This heuristic check is what causes a passage to be classified as clinician\u2011only because it contains a dosage expression.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "why do they add the section title to the embedding input along with the text?",
+      "rank": 1,
+      "answer": "They prepend the section title so the embedding model gets extra topical context.\u202fWhen a passage\u2019s own heading is vague (e.g., just \u201cManagement\u201d), adding the section title helps the model understand what the passage is about, improving the semantic representation used for retrieval.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "does rebuilding the index just update it incrementally or what?",
+      "rank": 1,
+      "answer": "Rebuilding the index does **not** update it incrementally. The `rebuild_index` function deletes the existing collection and creates a brand\u2011new one, then inserts all passages again. It replaces the old index entirely rather than performing an incremental update.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what metrics are recommended in the report to check retrieval quality?",
+      "rank": 1,
+      "answer": "The report recommends measuring retrieval quality with the classic information\u2011retrieval metrics:\n\n* **Precision\u202f@\u202fk**  \n* **Recall\u202f@\u202fk**  \n* **Mean Reciprocal Rank (MRR)**  \n\nIn addition, the evaluation should also track auxiliary metrics such as restricted\u2011content leakage, correct \u201cno\u2011guidance\u201d behavior, citation correctness, answer faithfulness, and latency.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what does the l2 layer actually do, does it predict price directly?",
+      "rank": 1,
+      "answer": "The L2 layer does **not** make its own price\u2011movement prediction. Its role is a secondary intelligence and validation system that takes the L1 output (prediction, confidence score, etc.) and evaluates the market context\u2014volatility, spread behavior, liquidity stability, order\u2011flow imbalance, recent accuracy, market session, trend strength, etc. Based on this analysis it:\n\n* Validates whether the L1 prediction should be trusted  \n* Adjusts the confidence level (increasing, reducing, or rejecting it)  \n* Flags risky or unstable market conditions  \n* Provides a final \u201csignal\u201d (e.g., UP/DOWN) with an adjusted confidence and risk level  \n\nSo the L2 layer only validates and adjusts the L1 prediction; it does not directly predict price itself.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what is the model trying to predict and how's the label set up?",
+      "rank": 1,
+      "answer": "The model is built to forecast the **short\u2011term direction of the gold price** (e.g., whether gold will go up or down in the next few minutes).  \n\n**Label creation:**  \n- After the feature window, the future price is compared to the current price.  \n- If the future price is higher than the current price, the target label is set to **1** (indicating an \u201cUP\u201d move).  \n- If the future price is lower than the current price, the target label is set to **0** (indicating a \u201cDOWN\u201d move).  \n\nThus the label is a binary indicator of the next\u20115\u2011minute price movement direction.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what time windows do they use to aggregate the tick data?",
+      "rank": 1,
+      "answer": "They aggregate the tick\u2011level Bookmap data into **1\u2011minute, 5\u2011minute, and 15\u2011minute windows**.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what market sessions are used for the time features?",
+      "rank": 2,
+      "answer": "The time\u2011features include a **market_session** variable with the following sessions:\n\n- Asian Session  \n- London Session  \n- New\u202fYork Session.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what does order_book_imbalance actually mean/show?",
+      "rank": 3,
+      "answer": "**order_book_imbalance** is a feature that measures the relative pressure between buying and selling interest in the order book. It is calculated from the sizes (liquidity) on the bid side versus the ask side and serves as a **market\u2011pressure indicator**. A positive imbalance means there is more liquidity (or aggressive orders) on the buy side than on the sell side, suggesting upward price pressure; a negative imbalance indicates stronger sell\u2011side liquidity and downward pressure. This feature is used by the model to gauge the strength of the order\u2011flow imbalance and help decide whether a prediction is reliable.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what metrics do they use to evaluate the backtest model?",
+      "rank": 1,
+      "answer": "They evaluate the back\u2011test model with a suite of error\u2011and\u2011classification metrics, specifically **Accuracy, MAE, RMSE, Precision, Recall, Confidence, and Reliability**.",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what forecast horizons can the system handle?",
+      "rank": 1,
+      "answer": "The system can generate forecasts for the following horizons:\n\n- Next\u202f1\u202fminute  \n- Next\u202f5\u202fminutes  \n- Next\u202f15\u202fminutes  \n- Next\u202f1\u202fhour",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what tech stack do they suggest for the dashboard and deployment?",
+      "rank": 1,
+      "answer": "The suggested stack for the dashboard is **React\u202f/\u202fNext.js**, and for deployment they recommend using **Docker** (with cloud GPU resources).",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "can you give an example of what an l1 output looks like?",
+      "rank": 2,
+      "answer": "An example of an L1\u2011layer output is:\n\n**L1 Output Prediction:**\u202fUP  \n**Confidence:**\u202f67\u202f%  \n**Expected Move:**\u202f+0.4\u202f%",
+      "correct": true,
+      "faithful": true
+    },
+    {
+      "question": "what example does it show for the final prediction after l2 validation?",
+      "rank": 2,
+      "answer": "The example shows:\n\n**Final Prediction:**\u202fUP  \n**Confidence:**\u202f74%  \n**Risk Level:**\u202fMedium  \n\n(Reason: strong buy\u2011side order flow, positive order\u2011book imbalance, stable spread conditions, and liquidity support below the current price.)",
+      "correct": true,
+      "faithful": true
+    }
+  ]
+}
